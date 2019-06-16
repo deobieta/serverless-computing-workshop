@@ -1,0 +1,18 @@
+resource "aws_lambda_permission" "simple" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.simple.arn
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.simple.arn
+}
+
+resource "aws_cloudwatch_event_rule" "simple" {
+  name                = "simple_lambda_function"
+  schedule_expression = "cron(0/1 * * * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "simple" {
+  target_id = "simple"
+  rule      = aws_cloudwatch_event_rule.simple.name
+  arn       = aws_lambda_function.simple.arn
+}
