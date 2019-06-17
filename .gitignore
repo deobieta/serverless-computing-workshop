@@ -1,3 +1,3 @@
 terraform.tfstate*
 .terraform
-3-workshop-lambda-canary/function/simple_canary.zip
+*.zip
