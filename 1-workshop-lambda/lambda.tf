@@ -24,8 +24,8 @@ resource "aws_lambda_function" "simple" {
   role = aws_iam_role.simple.arn
 }
 
-output "version number" {
-  value = "${aws_lambda_function.simple.version}"
+output "version_number" {
+  value = aws_lambda_function.simple.version
 }
 
 # IAM role que indica qué otros servicios de AWS la función lambda 
