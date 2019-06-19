@@ -5,8 +5,8 @@ data "archive_file" "python_lambda_with_layer" {
 }
 
 resource "aws_s3_bucket_object" "python_lambda_with_layer" {
-  bucket = "serverless-computing-workshop"
-  key    = "python_lambda_with_layer.zip"
+  bucket = "serverless-computing-workshop-${data.aws_caller_identity.current.account_id}"
+  key   = "python_lambda_with_layer.zip"
   source = data.archive_file.python_lambda_with_layer.output_path
   etag   = "${filemd5(data.archive_file.python_lambda_with_layer.output_path)}"
 }
