@@ -1,3 +1,4 @@
+
 #-------------------------------------------------------------------------
 # recurso aws_api_gateway_rest_api para crear una API gateway REST API. 
 # https://www.terraform.io/docs/providers/aws/r/api_gateway_rest_api.html
@@ -51,7 +52,6 @@ resource "aws_api_gateway_integration" "lambda" {
   depends_on = [
     aws_lambda_alias.simple_canary
   ]
-  #uri                     = aws_lambda_function.simple_canary.invoke_arn
 }
 
 
@@ -80,7 +80,6 @@ resource "aws_api_gateway_integration" "lambda_root" {
   depends_on = [
     aws_lambda_alias.simple_canary
   ]
-  #uri                     = aws_lambda_function.simple_canary.invoke_arn
 }
 
 
@@ -101,7 +100,7 @@ resource "aws_api_gateway_deployment" "workshop" {
   stage_name  = "test"
 }
 
-output "base_url" {
+output "endpoint" {
   value = aws_api_gateway_deployment.workshop.invoke_url
 }
 

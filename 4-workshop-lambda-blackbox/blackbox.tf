@@ -1,4 +1,3 @@
-
 module "lambda-api-gateway" {
   source      = "../modules/lambda-api-gateway/"
   name        = "simple-blackbox"

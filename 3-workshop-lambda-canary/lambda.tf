@@ -5,13 +5,16 @@ data "archive_file" "simple_canary" {
   output_path = "function/simple_canary.zip"
 }
 
+
+data "aws_caller_identity" "current" {}
+
 #-------------------------------------------------------------------------
 # S3 bucket previamente creado
 # recurso aws_s3_bucket_object para indicar al servicio de lambda 
 # donde deber tomar nuestro código para ser desplegado
 #-------------------------------------------------------------------------
 resource "aws_s3_bucket_object" "simple_canary" {
-  bucket = "serverless-computing-workshop"
+  bucket = "serverless-computing-workshop-${data.aws_caller_identity.current.account_id}"
   key    = "simple_canary.zip"
   source = data.archive_file.simple_canary.output_path
   etag   = "${filemd5(data.archive_file.simple_canary.output_path)}"
@@ -26,9 +29,9 @@ resource "aws_s3_bucket_object" "simple_canary" {
 # https://www.terraform.io/docs/providers/aws/r/lambda_function.html 
 #-------------------------------------------------------------------------
 resource "aws_lambda_function" "simple_canary" {
-  function_name = "simple-canary"
+  function_name = "simple-canary-10"
 
-  # incrementa la version
+  # incrementa la version para canary release
   publish = true
 
   # S3 bucket donde pondremos nuestro código y el servicio de lambda lo tomará
@@ -67,54 +70,3 @@ resource "aws_iam_role" "simple_canary" {
 }
 EOF
 }
-
-
-resource "aws_lambda_alias" "simple_canary" {
-  name = "alias-canary-test"
-  function_name = "${aws_lambda_function.simple_canary.arn}"
-  function_version = aws_lambda_function.simple_canary.version
-  depends_on = [
-    aws_lambda_function.simple_canary
-  ]
-
-  routing_config {
-    additional_version_weights = {
-      "11" = 0.5
-    }
-  }
-
-
-}
-
-output "aws_lambda_alias" {
-  value = aws_lambda_alias.simple_canary
-}
-
-output "aws_lambda_function" {
-  value = aws_lambda_function.simple_canary
-}
-
-#aws lambda create-alias --function-name blog_endpoint --name production --function-version 2 --routing-config "AdditionalVersionWeights={1=0.5}"
-
-#-------------------------------------------------------------------------
-# recurso aws_lambda_permission crea el permiso para que rescursos
-# externos puedan invocar la lambda. (CloudWatch Event Rule, SNS or S3)
-# https://www.terraform.io/docs/providers/aws/r/lambda_permission.html
-#-------------------------------------------------------------------------
-/*
-resource "aws_lambda_permission" "apigw" {
-  statement_id  = "AllowAPIgatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.simple_canary.arn
-  principal     = "apigateway.amazonaws.com"
-
-  depends_on = [aws_lambda_alias.simple_canary]
-
-  # The# /*#/* portion grants access from any method on any resource
-  # within the API gateway "REST API".
-  #source_arn = "${aws_api_gateway_deployment.workshop.execution_arn}#/*#/*"
-  #arn:aws:execute-api:us-east-2:059715603496:kz063q7y7f
-}
-*/
-
-

@@ -24,7 +24,7 @@ resource "aws_lambda_function" "simple" {
   role = aws_iam_role.simple.arn
 }
 
-output "version number" {
+output "version_number" {
   value = "${aws_lambda_function.simple.version}"
 }
 

@@ -93,7 +93,7 @@ resource "aws_api_gateway_deployment" "workshop" {
   stage_name  = "test"
 }
 
-output "base_url" {
+output "endpoint" {
   value = aws_api_gateway_deployment.workshop.invoke_url
 }
 

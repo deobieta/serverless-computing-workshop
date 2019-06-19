@@ -3,6 +3,9 @@ variable "app_version" {
   default = "1"
 }
 
+data "aws_caller_identity" "current" {}
+
+
 #-------------------------------------------------------------------------
 # recurso aws_lambda_function para crear una función en el servicio 
 # de lambda en la region us-east-2 definido en el provider.
@@ -15,7 +18,7 @@ resource "aws_lambda_function" "simple_apigateway" {
 
   # S3 bucket donde pondremos nuestro código y el servicio de lambda lo tomará
   # para ser desplegado
-  s3_bucket = "serverless-computing-workshop"
+  s3_bucket = "serverless-computing-workshop-${data.aws_caller_identity.current.account_id}"
   s3_key    = "v${var.app_version}/simple.zip"
 
   # "main" es el nombre del archivo dentro de simple_apigateway.zip (main.py) y "handler"
