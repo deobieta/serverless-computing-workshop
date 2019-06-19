@@ -25,11 +25,7 @@ resource "aws_lambda_function" "simple" {
 }
 
 output "version_number" {
-<<<<<<< HEAD
   value = "${aws_lambda_function.simple.version}"
-=======
-  value = aws_lambda_function.simple.version
->>>>>>> 772ddd18b92e19016cb18aae8e019ec682b3dc75
 }
 
 # IAM role que indica qué otros servicios de AWS la función lambda 
