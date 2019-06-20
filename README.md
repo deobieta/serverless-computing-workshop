@@ -79,9 +79,7 @@ También puedes usar el editor de tu elección, abrir el archivo 1-workshop-mgmt
     Enter a value: yes
 
 Terraform creará un plan de ejecución y al final pregunta si quieres aplicar el plan, escribe "yes" para aplicar los cambios.
-
-Al aplicar el plan, Terraform dará un valor de salida que nos indica el número de verisón de nuestra función. 
-
+Al aplicar el plan, Terraform dará un valor de salida que nos indica el número de versión de nuestra función.
 Podemos invocar la función de la siguiente forma:
 
     $ aws lambda invoke --region=us-east-2 --function-name=simple output.txt
@@ -91,7 +89,7 @@ Toma nota del valor de salida "workshop_bucket_name" ya que lo usaremos en los p
 ## Blue-Green 
 
 Los despliegues "Blue-Green" son una técnica que reduce el tiempo de falla de una 
-aplicación, consiste en correr dos ambiente identicos al mismo tiempo pero solo un ambiente se encargará de servir el 100% del tráfico. Si el nuevo ambiente funciona correctamente podemos apagar el ambiente anterior, de lo contrario podemos regresar 
+aplicación, consiste en correr dos ambiente idénticos al mismo tiempo pero solo un ambiente se encargará de servir el 100% del tráfico. Si el nuevo ambiente funciona correctamente podemos apagar el ambiente anterior, de lo contrario podemos regresar 
 a una versión estable al ambiente anterior.  
 
 NOTA: para este ejercicio se requiere un bucket de S3 puedes saber el nombre del bucket de los valores de salida del ejercicio anterior. El nombre debe ser algo parecido a "serverless-computing-workshop-XXXXXXXXX"
@@ -130,7 +128,6 @@ Y volvemos a una versión estable.
 Un "Canary release" es una técnica usada para reducir el riesgo al introducir cambios de nuevas versiones
 de software de tal forma que no impacten de gran manera o total los sistemas que estamos actualizando. Esto se logra introduciendo los cambios de forma gradual en pequeños porcentajes al tráfico que sirve la aplicación hasta lograr que el 100% del tráfico se sirva con el sistema actualizado.
 
-En este ejercicio  
 
     $ cd 3-workshop-lambda-canary/
     $ terraform init
@@ -144,13 +141,13 @@ Actualmente nuestro stack se ve algo así:
     apigateway -> alias -> lambda
 
 Debemos crear otra versión de la función para lograrlo edita el archivo "function/main.py" y repite el comando "terraform apply" esta vez terraform 
-publicara otra versión de la función en  vez de reemplazarla, esto se logra con la directiva "publish = true" dentro del recurso aws_lambda_function en el 
+publicará otra versión de la función en  vez de reemplazarla, esto se logra con la directiva "publish = true" dentro del recurso aws_lambda_function en el 
 archivo lambda.tf.
 
     $ nano function/main.py
     
 
-IMPORTANTE: Antes de aplicar los cambios en Terraform debemos configura el ruteo entre las dos versiones de nuestra función para lograrlo debemos editar el archivo lambda-alias.tf y descomentar routing_config. 
+IMPORTANTE: Antes de aplicar los cambios en Terraform debemos configurar el ruteo entre las dos versiones de nuestra función para lograrlo debemos editar el archivo lambda-alias.tf y descomentar routing_config. 
 
     $ terraform apply
 
@@ -163,7 +160,7 @@ Ahora nuestro stack se ve así:
 
 ## Black box o módulo de Terraform
 
-Los módulos de terraform nos ayudan a tener menos código, dejar de repetir rescursos y copiar archivos. También es una buena forma de crear cajas negras 
+Los módulos de terraform nos ayudan a tener menos código, dejar de repetir recursos y copiar archivos. También es una buena forma de crear cajas negras 
 (black box) en donde podemos definir cómo es que nuestra infraestructura se va a crear y decidir qué recursos y atributos vamos a exponer a colaboradores que no necesariamente deben tener total acceso a la infraestructura. 
 
     $ cd 4-workshop-lambda-blackbox/
@@ -178,12 +175,12 @@ Los módulos de terraform nos ayudan a tener menos código, dejar de repetir res
     Enter a value: yes
     
 El archivo blackbox.tf contiene 10 lineas de código y creo exactamente la misma infraestructura que nuestros ejercicios anteriores. La diferencia es que 
-la mayor cantidad de código se encuentra en el directorio de módulos. En este ejemplo incluimos módulos de directrios locales dentro del mismo 
+la mayor cantidad de código se encuentra en el directorio de módulos. En este ejemplo incluimos módulos de directorios locales dentro del mismo 
 repositorio de git pero también se pueden obtener de forma remota especificando la dirección del repositorio en "source".
 
 ## Layers
 
-Lambda tiene una funcionalidad de capas que puede ayudar a acelerar el tiempo de contrucción y despliegue de funciones. Cada función puede tener hasta 5 capas de código que se puede compartir entre otras funciones. De esta forma se pueden hacer capas de librerías que se usan en una o varias funciones, librerias que pueden llegar a ser bastantes y que tardan en ser empacadas cada vez que hay un despliegue de funciones. En el ejercicio que vamos a realizar terraform va a crear una capa (layer) de lambda con el contenido del directorio python-layer, dentro hay una estructura de directorios que es necesaria para que nuestra función final pueda hacer uso del código de la capa. El código de las capas se instalan dentro del directorio /opt así es que nuestra capa quedará al final de la siguiente forma: /opt/python/lib/python3.7/site-packages/from_layer.py.  Esto quiere decir que el código va a estar disponible al momento de ejecutar nuestra función de lambda normal.
+Lambda tiene una funcionalidad de capas que puede ayudar a acelerar el tiempo de construcción y despliegue de funciones. Cada función puede tener hasta 5 capas de código que se puede compartir entre otras funciones. De esta forma se pueden hacer capas de librerías que se usan en una o varias funciones, librerías que pueden llegar a ser bastantes y que tardan en ser empacadas cada vez que hay un despliegue de funciones. En el ejercicio que vamos a realizar terraform va a crear una capa (layer) de lambda con el contenido del directorio python-layer, dentro hay una estructura de directorios que es necesaria para que nuestra función final pueda hacer uso del código de la capa. El código de las capas se instalan dentro del directorio /opt así es que nuestra capa quedará al final de la siguiente forma: /opt/python/lib/python3.7/site-packages/from_layer.py.  Esto quiere decir que el código va a estar disponible al momento de ejecutar nuestra función de lambda normal.
 
     $ cd 5-workshop-lambda-layers/
     $ terraform init
@@ -198,7 +195,7 @@ Lambda tiene una funcionalidad de capas que puede ayudar a acelerar el tiempo de
 
 
 Entra a la consola de lambda en tu navegador, la región que usamos en us-east-2 (Ohio). 
-Da clic en la función "python-lambda-with-layer". En la sección de "Designer" podemos ver que nuestra función está usando una capa, si damos clic en la capa la consola nos dirá el nombre y versión. En la sección de "Function code" podemos ver que nuestra función está incluyendo una librería que se llama "from_layer" y en la linea 4 hacemos uso de la librería para regresar un nombre "name = fl.get_name()".
+Da clic en la función "python-lambda-with-layer". En la sección de "Designer" podemos ver que nuestra función está usando una capa, si damos clic en la capa la consola nos dirá el nombre y versión. En la sección de "Function code" podemos ver que nuestra función está incluyendo una librería que se llama "from_layer" y en la línea 4 hacemos uso de la librería para regresar un nombre "name = fl.get_name()".
 
 Prueba la función lambda dando clic en el botón de "Test", la prueba requiere de un evento en el nombre del evento puedes poner el nombre que desees, da clic en "Test" de nuevo.  Ve los detalles de la ejecución.
 
